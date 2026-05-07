@@ -1,14 +1,14 @@
 name: Deploy and Test Cluster
 
-on:
-  push:
-    branches: [main]
-    paths:
-      - 'k8s/**'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'k8s/**'
+# on:
+#   push:
+#     branches: [main]
+#     paths:
+#       - 'k8s/**'
+#   pull_request:
+#     branches: [main]
+#     paths:
+#       - 'k8s/**'
 
 jobs:
   deploy-and-test-cluster:
@@ -28,4 +28,3 @@ jobs:
         run: |
           kubectl wait --for=condition=ready pod -l app=demo-db --timeout=180s
           kubectl wait --for=condition=ready pod -l app=petclinic --timeout=180s
-

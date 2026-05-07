@@ -3,19 +3,18 @@
 
 name: Java CI with Maven
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+# on:
+#   push:
+#     branches: [ main ]
+#   pull_request:
+#     branches: [ main ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '17' ]
+        java: ["17"]
 
     steps:
       - uses: actions/checkout@v4
@@ -23,7 +22,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: ${{matrix.java}}
-          distribution: 'adopt'
+          distribution: "adopt"
           cache: maven
       - name: Build with Maven Wrapper
         run: ./mvnw -B verify
