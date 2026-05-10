@@ -49,6 +49,10 @@ class PetController {
 
 	private static final String VIEWS_PETS_CREATE_OR_UPDATE_FORM = "pets/createOrUpdatePetForm";
 
+	private static final String OWNER_NOT_FOUND_PREFIX = "Owner not found with id: ";
+
+	private static final String OWNER_NOT_FOUND_SUFFIX = ". Please ensure the ID is correct ";
+
 	private final OwnerRepository owners;
 
 	private final PetTypeRepository types;
@@ -63,16 +67,13 @@ class PetController {
 		return this.types.findPetTypes();
 	}
 
-	// This @ModelAttribute method returns an entity — that is fine.
-	// SonarQube only flags @RequestMapping (GET/POST) method parameters, not providers.
 	@ModelAttribute("owner")
 	public Owner findOwner(@PathVariable("ownerId") int ownerId) {
 		Optional<Owner> optionalOwner = this.owners.findById(ownerId);
-		return optionalOwner.orElseThrow(() -> new IllegalArgumentException(
-				"Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
+		return optionalOwner
+			.orElseThrow(() -> new IllegalArgumentException(OWNER_NOT_FOUND_PREFIX + ownerId + OWNER_NOT_FOUND_SUFFIX));
 	}
 
-	// Returns PetDto instead of Pet entity
 	@ModelAttribute("pet")
 	public PetDto findPet(@PathVariable("ownerId") int ownerId,
 			@PathVariable(name = "petId", required = false) Integer petId) {
@@ -80,8 +81,8 @@ class PetController {
 			return new PetDto();
 		}
 		Optional<Owner> optionalOwner = this.owners.findById(ownerId);
-		Owner owner = optionalOwner.orElseThrow(() -> new IllegalArgumentException(
-				"Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
+		Owner owner = optionalOwner
+			.orElseThrow(() -> new IllegalArgumentException(OWNER_NOT_FOUND_PREFIX + ownerId + OWNER_NOT_FOUND_SUFFIX));
 		return PetDto.fromEntity(owner.getPet(petId));
 	}
 
@@ -106,8 +107,7 @@ class PetController {
 			BindingResult result, RedirectAttributes redirectAttributes) {
 
 		Owner owner = this.owners.findById(ownerId)
-			.orElseThrow(() -> new IllegalArgumentException(
-					"Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
+			.orElseThrow(() -> new IllegalArgumentException(OWNER_NOT_FOUND_PREFIX + ownerId + OWNER_NOT_FOUND_SUFFIX));
 
 		if (StringUtils.hasText(petDto.getName()) && petDto.isNew() && owner.getPet(petDto.getName(), true) != null) {
 			result.rejectValue("name", "duplicate", "already exists");
@@ -142,8 +142,7 @@ class PetController {
 			BindingResult result, RedirectAttributes redirectAttributes) {
 
 		Owner owner = this.owners.findById(ownerId)
-			.orElseThrow(() -> new IllegalArgumentException(
-					"Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
+			.orElseThrow(() -> new IllegalArgumentException(OWNER_NOT_FOUND_PREFIX + ownerId + OWNER_NOT_FOUND_SUFFIX));
 
 		String petName = petDto.getName();
 		if (StringUtils.hasText(petName)) {
